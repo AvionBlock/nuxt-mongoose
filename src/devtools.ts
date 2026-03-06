@@ -1,57 +1,68 @@
-import { existsSync } from 'node:fs'
-import type { Nuxt } from 'nuxt/schema'
-import { extendViteConfig } from '@nuxt/kit'
-import type { Resolver } from '@nuxt/kit'
-import { extendServerRpc, onDevToolsInitialized, addCustomTab } from '@nuxt/devtools-kit'
-import type { ClientFunctions, ServerFunctions } from './types'
-import type { ModuleOptions } from './module'
-import { useViteWebSocket } from './utils'
+import { existsSync } from "node:fs";
+import type { Nuxt } from "nuxt/schema";
+import { extendViteConfig } from "@nuxt/kit";
+import type { Resolver } from "@nuxt/kit";
+import {
+  extendServerRpc,
+  onDevToolsInitialized,
+  addCustomTab,
+} from "@nuxt/devtools-kit";
+import type { ClientFunctions, ServerFunctions } from "./types";
+import type { ModuleOptions } from "./module";
+import { useViteWebSocket } from "./utils";
 
-import { setupRPC } from './rpc'
-import { CLIENT_PATH, CLIENT_PORT, RPC_NAMESPACE } from './constants'
+import { setupRPC } from "./rpc";
+import { CLIENT_PATH, CLIENT_PORT, RPC_NAMESPACE } from "./constants";
 
-export function setupDevToolsUI(options: ModuleOptions, resolve: Resolver['resolve'], nuxt: Nuxt) {
-  const clientPath = resolve('./client')
-  const isProductionBuild = existsSync(clientPath)
+export function setupDevToolsUI(
+  options: ModuleOptions,
+  resolve: Resolver["resolve"],
+  nuxt: Nuxt,
+) {
+  const clientPath = resolve("./client");
+  const isProductionBuild = existsSync(clientPath);
 
   // serve production-built client (used when package is published)
   if (isProductionBuild) {
-    nuxt.hook('vite:serverCreated', async (server) => {
-      const sirv = await import('sirv').then(r => r.default || r)
+    nuxt.hook("vite:serverCreated", async (server) => {
+      const sirv = await import("sirv").then((r) => r.default || r);
       server.middlewares.use(
         CLIENT_PATH,
         sirv(clientPath, { dev: true, single: true }),
-      )
-    })
+      );
+    });
   }
   // in local development, proxy to dev server
   else {
     extendViteConfig((config) => {
-      config.server = config.server || {}
-      config.server.proxy = config.server.proxy || {}
+      config.server = config.server || {};
+      config.server.proxy = config.server.proxy || {};
       config.server.proxy[CLIENT_PATH] = {
         target: `http://localhost:${CLIENT_PORT}${CLIENT_PATH}`,
         changeOrigin: true,
         followRedirects: true,
-        rewrite: path => path.replace(CLIENT_PATH, ''),
-      }
-    })
+        rewrite: (path) => path.replace(CLIENT_PATH, ""),
+      };
+    });
   }
 
   addCustomTab({
-    name: 'nuxt-mongoose',
-    title: 'Mongoose',
-    icon: 'skill-icons:mongodb',
+    name: "nuxt-mongoose",
+    title: "Mongoose",
+    icon: "skill-icons:mongodb",
     view: {
-      type: 'iframe',
+      type: "iframe",
       src: CLIENT_PATH,
     },
-  })
+  });
 
-  const wsServer = useViteWebSocket()
+  const wsServer = useViteWebSocket();
   onDevToolsInitialized(async () => {
-    const rpcFunctions = setupRPC({ options, wsServer, nuxt })
+    const rpcFunctions = setupRPC({ options, wsServer, nuxt });
 
-    extendServerRpc<ClientFunctions, ServerFunctions>(RPC_NAMESPACE, rpcFunctions)
-  })
+    extendServerRpc<ClientFunctions, ServerFunctions>(
+      RPC_NAMESPACE,
+      rpcFunctions,
+    );
+  });
 }

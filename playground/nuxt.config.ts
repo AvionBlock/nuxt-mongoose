@@ -1,33 +1,35 @@
-import { resolve } from 'node:path'
-import { defineNuxtConfig } from 'nuxt/config'
-import { defineNuxtModule } from '@nuxt/kit'
-import { startSubprocess } from '@nuxt/devtools-kit'
-import { CLIENT_PORT } from '../src/constants'
+import { resolve } from "node:path";
+import { defineNuxtConfig } from "nuxt/config";
+import { defineNuxtModule } from "@nuxt/kit";
+import { startSubprocess } from "@nuxt/devtools-kit";
+import { CLIENT_PORT } from "../src/constants";
 
 export default defineNuxtConfig({
   modules: [
-    '../src/module',
+    "../src/module",
     defineNuxtModule({
       setup(_, nuxt) {
-        if (!nuxt.options.dev)
-          return
+        if (!nuxt.options.dev) return;
 
         startSubprocess(
           {
-            command: 'npx',
-            args: ['nuxi', 'dev', '--port', CLIENT_PORT.toString()],
-            cwd: resolve(__dirname, '../client'),
+            command: "npx",
+            args: ["nuxi", "dev", "--port", CLIENT_PORT.toString()],
+            cwd: resolve(__dirname, "../client"),
           },
           {
-            id: 'nuxt-mongoose:client',
-            name: 'Nuxt Mongoose Client Dev',
+            id: "nuxt-mongoose:client",
+            name: "Nuxt Mongoose Client Dev",
           },
-        )
+        );
       },
     }),
   ],
+  mongoose: {
+    dnsServers: ["1.1.1.1", "1.0.0.1"],
+  },
   devtools: {
     enabled: true,
   },
-  compatibilityDate: '2025-12-18',
-})
+  compatibilityDate: "2025-12-18",
+});

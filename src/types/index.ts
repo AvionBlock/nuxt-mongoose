@@ -1,7 +1,7 @@
-import type { Nuxt } from 'nuxt/schema'
-import type { WebSocketServer } from 'vite'
-import type { ModuleOptions } from '../module'
-import type { ConnectionStates } from 'mongoose'
+import type { Nuxt } from "nuxt/schema";
+import type { WebSocketServer } from "vite";
+import type { ModuleOptions } from "../module";
+import type { ConnectionStates } from "mongoose";
 import type {
   Collection as MCollection,
   Document,
@@ -9,82 +9,99 @@ import type {
   InsertOneResult,
   DeleteResult,
   UpdateResult,
-} from 'mongodb'
+} from "mongodb";
 
 export interface ServerFunctions {
-  getOptions(): ModuleOptions
+  getOptions(): ModuleOptions;
 
-  connectionInfo(): Promise<DatabaseConnectionInfo>
+  connectionInfo(): Promise<DatabaseConnectionInfo>;
 
   // Database - collections
-  createCollection(name: string): Promise<RPCResult<MCollection<Document>>>
-  listCollections(): Promise<RPCResult<Array<Document>>>
-  getCollection(name: string): Promise<RPCResult<WithId<Document> | null>>
-  dropCollection(name: string): Promise<RPCResult<boolean>>
+  createCollection(name: string): Promise<RPCResult<MCollection<Document>>>;
+  listCollections(): Promise<RPCResult<Array<Document>>>;
+  getCollection(name: string): Promise<RPCResult<WithId<Document> | null>>;
+  dropCollection(name: string): Promise<RPCResult<boolean>>;
 
   // Database - documents
-  createDocument(collection: string, data: Document): Promise<RPCResult<InsertOneResult<Document>>>
-  countDocuments(collection: string): Promise<RPCResult<number>>
-  listDocuments(collection: string, options: PaginationOptions): Promise<RPCResult<Array<WithId<Document>>>>
-  getDocument(collection: string, id: string): Promise<RPCResult<WithId<Document> | null>>
-  updateDocument(collection: string, data: { _id: string } & Document): Promise<RPCResult<UpdateResult>>
-  deleteDocument(collection: string, id: string): Promise<RPCResult<DeleteResult>>
+  createDocument(
+    collection: string,
+    data: Document,
+  ): Promise<RPCResult<InsertOneResult<Document>>>;
+  countDocuments(collection: string): Promise<RPCResult<number>>;
+  listDocuments(
+    collection: string,
+    options: PaginationOptions,
+  ): Promise<RPCResult<Array<WithId<Document>>>>;
+  getDocument(
+    collection: string,
+    id: string,
+  ): Promise<RPCResult<WithId<Document> | null>>;
+  updateDocument(
+    collection: string,
+    data: { _id: string } & Document,
+  ): Promise<RPCResult<UpdateResult>>;
+  deleteDocument(
+    collection: string,
+    id: string,
+  ): Promise<RPCResult<DeleteResult>>;
 
   // Resource - api-routes & models
-  generateResource(collection: MCollection, resources: Resource[]): Promise<any>
-  resourceSchema(collection: string): Promise<any>
+  generateResource(
+    collection: ResourceCollection,
+    resources: Resource[],
+  ): Promise<any>;
+  resourceSchema(collection: string): Promise<any>;
 
-  reset(): void
+  reset(): void;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface ClientFunctions {
-}
+export interface ClientFunctions {}
 
 export interface DevtoolsServerContext {
-  nuxt: Nuxt
-  options: ModuleOptions
-  wsServer: Promise<WebSocketServer>
+  nuxt: Nuxt;
+  options: ModuleOptions;
+  wsServer: Promise<WebSocketServer>;
 }
 
-export interface Collection {
-  name: string
-  fields?: object[]
+export interface ResourceCollection {
+  name: string;
+  fields?: object[];
 }
 
 export interface Resource {
-  type: 'index' | 'create' | 'show' | 'put' | 'delete'
-  by?: string
+  type: "index" | "create" | "show" | "put" | "delete";
+  by?: string;
 }
 
 export interface DatabaseConnectionInfo {
-  connectionState: ConnectionStates
+  connectionState: ConnectionStates;
 
-  name?: string
-  host?: string
-  hosts?: string[]
+  name?: string;
+  host?: string;
+  hosts?: string[];
 
-  authenticated: boolean
+  authenticated: boolean;
 
-  mongooseVersion: string
-  driverVersion?: string
+  mongooseVersion: string;
+  driverVersion?: string;
 
   timestamps: {
-    now: number
-    connectedAt?: number
-  }
+    now: number;
+    connectedAt?: number;
+  };
 }
 
 export interface RPCError {
   error: {
-    message?: string
-    code?: number | string
-  }
+    message?: string;
+    code?: number | string;
+  };
 }
 
 export interface PaginationOptions {
-  page: number
-  limit: number
+  page: number;
+  limit: number;
 }
 
-export type RPCResult<T> = T | RPCError
+export type RPCResult<T> = T | RPCError;

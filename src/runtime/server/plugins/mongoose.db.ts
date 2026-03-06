@@ -1,5 +1,5 @@
-import { defineMongooseConnection } from '../services'
+import { defineMongooseConnection } from "../services";
 
 export default defineNitroPlugin(() => {
-  defineMongooseConnection()
-})
+  defineMongooseConnection();
+});
