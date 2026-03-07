@@ -1,5 +1,6 @@
 import { defineMongooseConnection } from "../services";
+import { defineNitroPlugin } from "nitropack/runtime/plugin";
 
-export default defineNitroPlugin(() => {
-  defineMongooseConnection();
+export default defineNitroPlugin(async () => {
+  await defineMongooseConnection();
 });
